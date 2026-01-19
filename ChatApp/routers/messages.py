@@ -1,0 +1,29 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from ChatApp.core.database import SessionLocal
+from ChatApp.services.chat_services import get_room_messages
+
+router = APIRouter(prefix="/chatrooms", tags=["Messages"])
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@router.get("/{room_id}/messages")
+def get_messages(
+    room_id: int,
+    limit: int = 50,
+    db: Session = Depends(get_db)
+):
+    print("Room ID:", room_id)
+    messages = get_room_messages(db, room_id, limit)
+    print("Messages:", messages)
+    return messages
+
+
