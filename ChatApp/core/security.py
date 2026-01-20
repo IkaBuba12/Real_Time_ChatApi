@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from starlette import status
 
 from ChatApp.core.database import get_db
 from ChatApp.models.models import User
@@ -47,8 +48,11 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
+def admin_only(current_user = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access only"
+        )
+    return current_user
 
-def admin_only(user: User = Depends(get_current_user)):
-    if user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin only")
-    return user

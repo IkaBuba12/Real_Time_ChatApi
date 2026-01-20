@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from ChatApp.routers import chat, messages, ws_chat, auth
+from ChatApp.routers import chat, messages, ws_chat, auth, admin
 from fastapi.responses import RedirectResponse
 from ChatApp.core.database import Base, engine
 app = FastAPI(title="Chat API")
@@ -9,6 +9,8 @@ app.include_router(messages.router)
 app.include_router(ws_chat.router)
 
 app.include_router(auth.router)
+
+app.include_router(admin.router)
 
 @app.get("/")
 def read_root():
